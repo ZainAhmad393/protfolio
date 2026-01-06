@@ -250,31 +250,33 @@ document.querySelectorAll('.project-card').forEach(card => {
 
 // Animate statistics on scroll
 function animateStats() {
-    const statNumbers = document.querySelectorAll('.stat-number');
-    
-    statNumbers.forEach(stat => {
-        const finalNumber = parseInt(stat.textContent);
-        const increment = finalNumber / 50;
-        let currentNumber = 0;
-        
+    const counters = document.querySelectorAll('.count');
+
+    counters.forEach(counter => {
+        const target = +counter.dataset.count;
+        let current = 0;
+        const increment = Math.max(1, Math.floor(target / 50));
+
         const timer = setInterval(() => {
-            currentNumber += increment;
-            if (currentNumber >= finalNumber) {
-                stat.textContent = finalNumber + (stat.textContent.includes('+') ? '+' : '');
+            current += increment;
+
+            if (current >= target) {
+                counter.textContent = target;
                 clearInterval(timer);
             } else {
-                stat.textContent = Math.floor(currentNumber) + (stat.textContent.includes('+') ? '+' : '');
+                counter.textContent = current;
             }
-        }, 50);
+        }, 30);
     });
 }
 
+
 // Trigger stats animation when section is visible
-const statsObserver = new IntersectionObserver((entries) => {
+const statsObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             animateStats();
-            statsObserver.unobserve(entry.target);
+            observer.disconnect(); // run only once
         }
     });
 }, { threshold: 0.5 });
